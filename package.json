@@ -5,7 +5,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.0"
   },
-  "description": "MCP server wrapping Mini's TrollBridge \u2014 a pay-per-call bounty-intel bridge for AI agents (x402 on Base)",
+  "description": "MCP server wrapping Mini's TrollBridge \u2014 a pay-per-call intel bridge for AI agents (x402 on Base + Solana)",
   "engines": {
     "node": ">=18"
   },
