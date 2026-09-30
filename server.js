@@ -16,6 +16,8 @@
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -436,8 +438,11 @@ const FREE_ENDPOINTS = {
   },
 };
 
+// Factory: a fresh server per connection. Required for stateless HTTP mode,
+// where every request gets its own transport (one Server <-> one transport).
+function createServer() {
 const server = new Server(
-  { name: "trollbridge-mcp", version: "1.2.0" },
+  { name: "trollbridge-mcp", version: "1.3.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -482,7 +487,74 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   return asText(result);
 });
 
+  return server;
+}
+
+async function runHttp() {
+  const app = createMcpExpressApp();
+
+  app.post("/mcp", async (req, res) => {
+    const server = createServer();
+    try {
+      const transport = new StreamableHTTPServerTransport({
+        sessionIdGenerator: undefined, // stateless: no session affinity needed
+      });
+      await server.connect(transport);
+      await transport.handleRequest(req, res, req.body);
+      res.on("close", () => {
+        transport.close();
+        server.close();
+      });
+    } catch (err) {
+      console.error("trollbridge-mcp http error:", err);
+      if (!res.headersSent) {
+        res.status(500).json({
+          jsonrpc: "2.0",
+          error: { code: -32603, message: "Internal server error" },
+          id: null,
+        });
+      }
+    }
+  });
+
+  const notAllowed = (_req, res) => {
+    res.writeHead(405).end(
+      JSON.stringify({
+        jsonrpc: "2.0",
+        error: { code: -32000, message: "Method not allowed." },
+        id: null,
+      })
+    );
+  };
+  app.get("/mcp", notAllowed);
+  app.delete("/mcp", notAllowed);
+  app.get("/", (_req, res) =>
+    res.json({
+      name: "trollbridge-mcp",
+      version: "1.3.0",
+      transport: "streamable-http",
+      endpoint: "/mcp",
+    })
+  );
+
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, (err) => {
+    if (err) {
+      console.error("trollbridge-mcp http failed:", err);
+      process.exit(1);
+    }
+    console.log(`trollbridge-mcp HTTP listening on :${PORT}/mcp`);
+  });
+}
+
 async function main() {
+  const useHttp =
+    process.env.MCP_TRANSPORT === "http" || process.argv.includes("--http");
+  if (useHttp) {
+    await runHttp();
+    return;
+  }
+  const server = createServer();
   const transport = new StdioServerTransport();
   await server.connect(transport);
 }
