@@ -50,8 +50,15 @@ statement that no payment was made.
 | `bridge_deadlines` | `GET /deadlines` | Class-action / claim deadlines |
 | `bridge_sweepstakes` | `GET /sweepstakes` | Free-to-enter sweepstakes, curated |
 | `bridge_verdicts` | `GET /verdicts` | Recently-paid bounties |
+| `bridge_opportunities` | `GET /opportunities` | Every paying opportunity, one normalized schema |
 
 Each bounty tool accepts an optional `limit` (1–200, default 50).
+
+### AI-intel lane — $0.02
+
+| Tool | Lane | What it returns |
+|---|---|---|
+| `bridge_models` | `GET /models` | x402-payable AI model catalog: 107 models, per-token pricing, free flagged (optional `limit` 1–200) |
 
 ### Market-intel lanes
 
