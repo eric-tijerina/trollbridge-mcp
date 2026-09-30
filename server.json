@@ -1,0 +1,19 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "description": "Pay-per-call intel bridge for AI agents \u2014 18 tools; tolled lanes $0.02 USDC via x402",
+  "name": "io.github.eric-tijerina/trollbridge-mcp",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://trollbridge-mcp-http.onrender.com/mcp"
+    }
+  ],
+  "repository": {
+    "id": "1393002187",
+    "source": "github",
+    "url": "https://github.com/eric-tijerina/trollbridge-mcp"
+  },
+  "title": "TrollBridge MCP",
+  "version": "1.3.0",
+  "websiteUrl": "https://github.com/eric-tijerina/trollbridge-mcp"
+}
