@@ -491,7 +491,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 }
 
 async function runHttp() {
-  const app = createMcpExpressApp();
+  const app = createMcpExpressApp({
+    host: "0.0.0.0",
+    // Render's public hostname must be allowlisted: the SDK's DNS-rebinding
+    // protection rejects every other Host header with 403.
+    allowedHosts: ["trollbridge-mcp-http.onrender.com", "localhost"],
+  });
 
   app.post("/mcp", async (req, res) => {
     const server = createServer();
