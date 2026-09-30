@@ -1,0 +1,30 @@
+# Smithery registry config for trollbridge-mcp.
+# Place at the repo root of github.com/eric-tijerina/trollbridge-mcp —
+# Smithery reads this automatically when you submit the repo URL.
+name: trollbridge-mcp
+description: "Pay-per-call intel for AI agents: 15 tolled lanes (bounty boards, crypto prices, wallet intel, token safety scans, prediction markets, web search, DeFi yields, new listings, gas prices, AI model catalog) at $0.02-$0.05 USDC per call on Base or Solana via x402. This server never pays — on a 402 it returns the payment instructions."
+category: Finance
+tags:
+  - x402
+  - crypto
+  - bounties
+  - defi
+  - web3
+  - ai-agents
+  - payments
+icon: "🌉"
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      trollbridgeUrl:
+        type: string
+        description: "Bridge base URL (default https://mini-tollbooth.onrender.com)"
+    required: []
+  commandFunction: |
+    (config) => ({
+      command: "npx",
+      args: ["-y", "github:eric-tijerina/trollbridge-mcp"],
+      env: config.trollbridgeUrl ? { TROLLBRIDGE_URL: config.trollbridgeUrl } : {}
+    })
