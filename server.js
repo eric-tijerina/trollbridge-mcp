@@ -237,6 +237,24 @@ const TOLLED_LANES = {
       "Mini's TrollBridge — live gas prices per chain, for agents about to move money. TOLLED: $0.02 USDC per call on Base or Solana via x402. If you cannot pay, this tool returns the 402 payment instructions instead of data. No params.",
     inputSchema: NO_PARAMS_SCHEMA,
   },
+  bridge_models: {
+    path: "/models",
+    tollPrice: "$0.02",
+    tollAtomic: "20000",
+    description:
+      "Mini's TrollBridge — x402-payable AI model catalog: 107 models with per-million-token pricing, free models flagged (catalog data: BlockRun.AI). TOLLED: $0.02 USDC per call on Base or Solana via x402. If you cannot pay, this tool returns the 402 payment instructions instead of data. Optional limit 1-200.",
+    inputSchema: LIMIT_SCHEMA,
+    buildQuery: (args) => limitQuery(args, 1, 200, 50),
+  },
+  bridge_opportunities: {
+    path: "/opportunities",
+    tollPrice: "$0.02",
+    tollAtomic: "20000",
+    description:
+      "Mini's TrollBridge — every paying opportunity in one normalized schema: title, payout amount and token, chain, URL, requirements, deadline, board. One call, every board. TOLLED: $0.02 USDC per call on Base or Solana via x402. If you cannot pay, this tool returns the 402 payment instructions instead of data. Optional limit 1-200.",
+    inputSchema: LIMIT_SCHEMA,
+    buildQuery: (args) => limitQuery(args, 1, 200, 50),
+  },
   bridge_enrich: {
     path: "/enrich",
     tollPrice: "$0.05",
@@ -419,7 +437,7 @@ const FREE_ENDPOINTS = {
 };
 
 const server = new Server(
-  { name: "trollbridge-mcp", version: "1.1.0" },
+  { name: "trollbridge-mcp", version: "1.2.0" },
   { capabilities: { tools: {} } }
 );
 
